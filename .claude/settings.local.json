@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python src/schema_checks.py)",
+      "Bash(python -m src.schema_checks)",
+      "Bash(Scripts/python.exe -m src.schema_checks)",
+      "Bash(venv/Scripts/python.exe -c \"import duckdb; print\\(duckdb.__version__\\)\")",
+      "Bash(venv/Scripts/python.exe -m src.schema_checks)",
+      "Bash(venv/Scripts/python.exe -m src.clean_schema_checks)"
+    ]
+  }
+}
