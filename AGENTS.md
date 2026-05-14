@@ -1,3 +1,5 @@
+
+
 # AGENTS.md
 
 ## Project Context
@@ -16,15 +18,15 @@ The project will eventually include:
 
 ## Current Sprint Phase
 
-Current phase: CIMS Sprint, Day 1–2.
+Current phase: CIMS Sprint, Days 3–4.
 
 Immediate goal:
-- Load the City of Ottawa Traffic Collision Data CSV into DuckDB
-- Inspect and document the schema
-- Run basic schema and spatial checks
-- Keep the implementation minimal and reliable
+- Implement src/text_to_sql.py with a LangGraph StateGraph containing one node and one state object
+- The graph takes a plain English question and returns generated SQL via the Anthropic API
+- Test the prompt against 8–10 hand-written questions
+- Document pass/fail results honestly
 
-Do not build the full Text-to-SQL app, ML pipeline, FastAPI backend, dashboard, or LLM summarizer yet unless explicitly requested.
+Do not build the Streamlit dashboard, RAG layer, ML pipeline, FastAPI backend, or query validator yet unless explicitly requested.
 
 ## Repository Structure
 
@@ -39,6 +41,9 @@ ottawa-road-safety-analytics/
 │   ├── schema_checks.py
 │   ├── text_to_sql.py
 │   └── query_validator.py
+|   ├── preprocess.py
+|   └── clean_schema_checks.py
+
 ├── sql/
 │   ├── 00_extensions.sql
 │   ├── 01_create_raw_tables.sql
@@ -60,34 +65,10 @@ ottawa-road-safety-analytics/
 - Environment variables loaded via python-dotenv from .env
 - No hardcoded file paths anywhere in src/
 
-## Data Layer Rules
+## LangGraph Design Rules
+- Use langgraph.graph.StateGraph for all LangGraph graphs
+- Define state as a TypedDict with clearly named fields
+- Days 3–4: one node only — text_to_sql_node
+- The node reads the prompt file, calls the Anthropic API, and writes generated SQL to state
+- Do not add additional nodes unless explicitly requested
 
-Use a two-layer DuckDB table design:
-
-- `collisions_raw`: exact raw source-loaded table
-- `collisions_clean`: future cleaned analysis-ready table
-
-For Day 1–2, only implement `collisions_raw`.
-
-`src/ingest.py` should only:
-- read `data/raw/Traffic_Collision_Data.csv`
-- create/connect to `data/processed/ottawa_road_safety.duckdb`
-- load the CSV into DuckDB as `collisions_raw`
-- preserve original column names
-- preserve raw categorical values
-- preserve nulls/blanks
-- preserve rows as-is
-- print row count, column count, and schema summary
-
-`src/ingest.py` must not:
-- rename columns
-- parse `Accident_Date`
-- strip coded prefixes from categorical columns
-- fill nulls with zero
-- cast count columns to integers
-- drop coordinate columns
-- drop `ObjectId`
-- remove coordinate outliers
-- create derived features
-
-Future preprocessing should happen in a separate module such as `src/preprocess.py`, which will create `collisions_clean` from `collisions_raw` after cleaning rules are documented.
