@@ -1,5 +1,3 @@
-
-
 # CLAUDE.md
 
 ## Project Context
@@ -18,16 +16,13 @@ The project will eventually include:
 
 ## Current Sprint Phase
 
-Current phase: CIMS Sprint, Days 3–4.
-
+Current phase: Days 7–8.
 Immediate goal:
-- Implement src/text_to_sql.py with a LangGraph StateGraph containing one node and one state object
-- The graph takes a plain English question and returns generated SQL via the Anthropic API
-- Test the prompt against 8–10 hand-written questions
-- Document pass/fail results honestly
+- Add a ChromaDB RAG layer that embeds schema docs and retrieves relevant context before SQL generation
+- Add a second LangGraph node: retrieve_schema_node runs before text_to_sql_node
+- Document retrieval approach in architecture notes
 
-Do not build the Streamlit dashboard, RAG layer, ML pipeline, FastAPI backend, or query validator yet unless explicitly requested.
-
+Do not build the query validator, prompt v2, ML pipeline, or FastAPI backend yet unless explicitly requested.
 ## Repository Structure
 
 Expected structure:
@@ -38,12 +33,21 @@ ottawa-road-safety-analytics/
 │   ├── config.py
 │   ├── database.py
 │   ├── ingest.py
+│   ├── preprocess.py
 │   ├── schema_checks.py
+│   ├── clean_schema_checks.py
 │   ├── text_to_sql.py
 │   └── query_validator.py
-|   ├── preprocess.py
-|   └── clean_schema_checks.py
-
+├── prompts/
+│   ├── text_to_sql_v1.md
+│   └── text_to_sql_v2.md
+├── eval/
+│   ├── run_eval.py
+│   ├── run_eval_with_results.py
+│   ├── test_cases.md
+│   └── eval_results.md
+├── dashboard/
+│   └── app.py
 ├── sql/
 │   ├── 00_extensions.sql
 │   ├── 01_create_raw_tables.sql
@@ -57,8 +61,10 @@ ottawa-road-safety-analytics/
 │   ├── data_dictionary.md
 │   ├── schema_notes.md
 │   └── data_sources.md
+├── notebooks/
 └── tests/
 ```
+
 ## Coding Conventions
 - All functions must have docstrings
 - Use pathlib.Path for all file paths, not raw strings
@@ -68,7 +74,14 @@ ottawa-road-safety-analytics/
 ## LangGraph Design Rules
 - Use langgraph.graph.StateGraph for all LangGraph graphs
 - Define state as a TypedDict with clearly named fields
-- Days 3–4: one node only — text_to_sql_node
-- The node reads the prompt file, calls the Anthropic API, and writes generated SQL to state
+- Current graph has one node: text_to_sql_node
+- The node reads the prompt file, calls the Groq API, and writes generated SQL to state
 - Do not add additional nodes unless explicitly requested
 
+## Streamlit Design Rules
+- Cache the DuckDB connection using @st.cache_resource
+- Cache the LangGraph graph using @st.cache_resource
+- Always display generated SQL in a st.code block inside an expander
+- Handle UNSUPPORTED QUERY with st.warning — never show it as a raw string
+- Handle SQL execution errors with st.error — never let them crash the app
+- Render a Folium map only when the result DataFrame contains both lat and long columns

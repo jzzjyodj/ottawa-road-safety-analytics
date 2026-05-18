@@ -1,25 +1,14 @@
 # Evaluation Test Cases
 
-**Status:** Questions finalized. Expected SQL to be filled in after 
-text_to_sql.py is running.
-
-## Format
-
-| ID | Question | Expected Columns Used | Generated SQL | Pass/Fail | Notes |
-|----|----------|-----------------------|---------------|-----------|-------|
-| 1  | How many collisions happened in 2017? | accident_year | TBD | TBD | Simple count with year filter |
-| 2  | How many fatal collisions occurred during weekends? | classification_of_accident, accident_day_of_week | TBD | TBD | Two conditions |
-| 3  | How many collisions involved turning movement between March 2021 and March 2022? | initial_impact_type, accident_date | TBD | TBD | Date range filter |
-| 4  | Which location had the most collisions? | location | TBD | TBD | Raw geo_id suffix will appear in result — known display limitation |
-| 5  | How many collisions happened on wet road conditions? | road_1_surface_condition | TBD | TBD | Single filter |
-| 6  | What percentage of collisions involved roundabouts? | traffic_control | TBD | TBD | Requires percentage calculation |
-| 7  | How many collisions happened in December on icy roads? | accident_month, road_1_surface_condition | TBD | TBD | Two filters |
-| 8  | Show me the location of all fatal collisions where there are more than 1 vehicle involved? | is_fatal, num_of_vehicles, lat, long, geo_valid | TBD | TBD | Spatial query — geo_valid must be TRUE |
-| 9  | How many collisions happened on each day of the week? | accident_day_of_week | TBD | TBD | GROUP BY query |
-| 10 | How many accidents were due to drunk driving? | none | UNSUPPORTED QUERY | TBD | Schema has no impairment column |
-
-## Guidelines
-- Expected SQL column is filled after running text_to_sql.py against each question
-- Pass = generated SQL is valid DuckDB syntax AND returns correct results
-- Fail = wrong columns, wrong values, invalid syntax, or hallucinated schema
-- Question 10 passes only if the system returns exactly: UNSUPPORTED QUERY
+| ID | Question | Expected Columns Used | Generated SQL | Result | Verdict | Notes |
+|---|---|---|---|---|---|---|
+| 1 | How many collisions happened in 2017? | accident_year | `SELECT COUNT(*) FROM collisions_clean WHERE accident_year = 2017` | 14,424 | PASS | TBD |
+| 2 | How many fatal collisions occurred during weekends? | classification_of_accident, accident_day_of_week | `SELECT COUNT(id) FROM collisions_clean WHERE is_fatal = TRUE AND (accident_day_of_week = 'Saturday' OR accident_day_of_week = 'Sunday')` | 38 | PASS | TBD |
+| 3 | How many collisions involved turning movement between March 2021 and March 2022? | initial_impact_type, accident_date | `SELECT COUNT(*) FROM collisions_clean WHERE initial_impact_type = 'Turning movement' AND accident_date >= '2021-03-01' AND accident_date < '2022-03-01' AND geo_valid = TRUE AND num_of_vehicles_missing = FALSE` | 1,100 | output is non-deterministic — first run had logic error, second run was correct. | TBD |
+| 4 | Which location had the most collisions? | location | `SELECT location FROM collisions_clean WHERE geo_valid = TRUE GROUP BY location ORDER BY COUNT(*) DESC LIMIT 1` | None | FAIL | Returned NONE — null location rows dominate after geo_valid filter; prompt needs WHERE location IS NOT NULL |
+| 5 | How many collisions happened on wet road conditions? | road_1_surface_condition | `SELECT COUNT(id) FROM collisions_clean WHERE road_1_surface_condition = 'Wet' AND geo_valid = TRUE` | 15,645 | PASS | TBD |
+| 6 | What percentage of collisions involved roundabouts? | traffic_control | `SELECT CAST(SUM(CASE WHEN traffic_control = 'Roundabout' THEN 1 ELSE 0 END) AS DOUBLE) * 100 / COUNT(*) FROM collisions_clean` | 1.386564% | PASS | TBD |
+| 7 | How many collisions happened in December on icy roads? | accident_month, road_1_surface_condition | `SELECT COUNT(*) FROM collisions_clean WHERE geo_valid = TRUE AND accident_month = 12 AND road_1_surface_condition = 'Ice'` | 858 | PASS | TBD |
+| 8 | Show me the location of all fatal collisions where there are more than 1 vehicle involved? | is_fatal, num_of_vehicles, lat, long, geo_valid | `SELECT location FROM collisions_clean WHERE is_fatal = TRUE AND num_of_vehicles > 1 AND num_of_vehicles_missing = FALSE AND geo_valid = TRUE` | 75 rows returned | PASS | TBD |
+| 9 | How many collisions happened on each day of the week? | accident_day_of_week | `SELECT accident_day_of_week, COUNT(*) AS num_collisions FROM collisions_clean GROUP BY accident_day_of_week ORDER BY num_collisions DESC` | Friday 16,177 / Thursday 15,454 / Wednesday 14,973 / Tuesday 14,630 / Monday 12,809 / Saturday 11,416 / Sunday 8,947 | PASS | TBD |
+| 10 | How many accidents were due to drunk driving? | none | UNSUPPORTED QUERY | UNSUPPORTED QUERY | TBD | Schema has no impairment column |
