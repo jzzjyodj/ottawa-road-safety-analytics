@@ -11,6 +11,9 @@ build/
 .venv/
 venv/
 env/
+Lib/
+Scripts/
+share/
 
 # Environment variables
 .env

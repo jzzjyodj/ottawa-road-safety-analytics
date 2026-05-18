@@ -62,6 +62,14 @@ Description: Ottawa traffic collision records from 2017 to 2024. Each row is one
 
 ---
 
+## Retrieved Schema Context
+
+The following schema context was retrieved as most relevant to the user question. Use it to inform your SQL generation:
+
+{context}
+
+---
+
 User question: {question}
 
 SQL query:
