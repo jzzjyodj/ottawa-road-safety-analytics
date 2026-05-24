@@ -12,3 +12,8 @@
 | 8 | Show me the location of all fatal collisions where there are more than 1 vehicle involved? | is_fatal, num_of_vehicles, lat, long, geo_valid | `SELECT location FROM collisions_clean WHERE is_fatal = TRUE AND num_of_vehicles > 1 AND num_of_vehicles_missing = FALSE AND geo_valid = TRUE` | 75 rows returned | PASS | TBD |
 | 9 | How many collisions happened on each day of the week? | accident_day_of_week | `SELECT accident_day_of_week, COUNT(*) AS num_collisions FROM collisions_clean GROUP BY accident_day_of_week ORDER BY num_collisions DESC` | Friday 16,177 / Thursday 15,454 / Wednesday 14,973 / Tuesday 14,630 / Monday 12,809 / Saturday 11,416 / Sunday 8,947 | PASS | TBD |
 | 10 | How many accidents were due to drunk driving? | none | UNSUPPORTED QUERY | UNSUPPORTED QUERY | TBD | Schema has no impairment column |
+| 11 | What is the percentage difference of collisions between 2022 and 2021? | accident_year | TBD | TBD | TBD | Tests year comparison and percentage calculation |
+| 12 | How many pedestrian related fatal accidents happened in total? | num_of_pedestrians, is_fatal | TBD | TBD | TBD | Tests active_transport and severity_injury chunks together |
+| 13 | How many collisions occurred during snowy weather conditions? | environment_condition_1 | TBD | TBD | TBD | Tests weather condition column distinct from road surface |
+| 14 | How many collisions occurred at stop signs? | traffic_control | TBD | TBD | TBD | Tests traffic_control with Stop sign value |
+| 15 | How many collisions involved drivers over the age of 65? | none | UNSUPPORTED QUERY | UNSUPPORTED QUERY | TBD | Schema has no age or driver demographics column |
