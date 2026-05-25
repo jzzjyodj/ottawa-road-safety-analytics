@@ -57,13 +57,24 @@ def process_query(question: str) -> None:
     con = get_db_connection()
 
     with st.spinner("Generating SQL..."):
-        result = graph.invoke({"question": question})
-    sql = result["generated_sql"]
+        result = graph.invoke({
+            "question": question,
+            "retrieved_context": "",
+            "generated_sql": "",
+            "validated_sql": "",
+            "validation_error": "",
+        })
+    sql = result["validated_sql"]
+    validation_error = result["validation_error"]
 
     st.session_state.sql = sql
     st.session_state.warning = None
     st.session_state.error = None
     st.session_state.df = None
+
+    if validation_error:
+        st.session_state.warning = f"Query blocked by validator: {validation_error}"
+        return
 
     if sql.strip() == UNSUPPORTED:
         st.session_state.warning = "This question cannot be answered from the available collision data."

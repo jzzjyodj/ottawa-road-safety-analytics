@@ -16,13 +16,13 @@ The project will eventually include:
 
 ## Current Sprint Phase
 
-Current phase: Days 7–8.
-Immediate goal:
-- Add a ChromaDB RAG layer that embeds schema docs and retrieves relevant context before SQL generation
-- Add a second LangGraph node: retrieve_schema_node runs before text_to_sql_node
-- Document retrieval approach in architecture notes
+Current phase: CIMS Sprint, Days 9–10.
 
-Do not build the query validator, prompt v2, ML pipeline, or FastAPI backend yet unless explicitly requested.
+Immediate goal:
+- Run eval/run_deepeval.py against all 15 test questions
+- Score answer relevancy and faithfulness using deepeval GEval with Groq judge
+- Record scores in eval/eval_results.md
+- Document delta between prompt v1 and prompt v2
 ## Repository Structure
 
 Expected structure:

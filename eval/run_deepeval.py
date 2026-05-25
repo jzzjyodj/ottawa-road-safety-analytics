@@ -5,6 +5,7 @@ import os
 from dotenv import load_dotenv
 from groq import Groq
 from deepeval import evaluate
+from deepeval.evaluate.configs import AsyncConfig
 from deepeval.models.base_model import DeepEvalBaseLLM
 from deepeval.metrics import GEval
 from deepeval.test_case import LLMTestCase, LLMTestCaseParams
@@ -33,7 +34,7 @@ QUESTIONS = [
 class GroqJudge(DeepEvalBaseLLM):
     """DeepEval-compatible LLM wrapper that uses the Groq API as the judge model."""
 
-    MODEL = "llama-3.3-70b-versatile"
+    MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"
 
     def __init__(self):
         """Initialize the Groq client using GROQ_API_KEY from environment."""
@@ -115,9 +116,11 @@ def main():
     judge = GroqJudge()
 
     test_cases = []
+    PROMPT_VERSION = "v1"  # change to "v2" to evaluate the improved prompt
+
     for qid, question in QUESTIONS:
         print(f"Q{qid}: {question[:50]}...")
-        sql = generate_sql(question)
+        sql = generate_sql(question, prompt_version=PROMPT_VERSION)
         test_cases.append(LLMTestCase(input=question, actual_output=sql))
 
     answer_relevancy, faithfulness = _build_metrics(judge)
@@ -126,16 +129,14 @@ def main():
     relevancy_results = evaluate(
         test_cases,
         [answer_relevancy],
-        max_concurrent=1,
-        throttle_value=6,
+        async_config=AsyncConfig(run_async=True, throttle_value=6, max_concurrent=1),
     )
 
     print("\nRunning faithfulness evaluation...")
     faithfulness_results = evaluate(
         test_cases,
         [faithfulness],
-        max_concurrent=1,
-        throttle_value=6,
+        async_config=AsyncConfig(run_async=True, throttle_value=6, max_concurrent=1),
     )
 
     try:
