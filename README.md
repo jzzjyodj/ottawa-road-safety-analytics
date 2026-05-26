@@ -34,7 +34,7 @@ The pipeline is a two-stage LangGraph graph wrapped in a Streamlit UI.
 4. **DuckDB execution** — the validated SQL runs against a single denormalised `collisions_clean` table of 94,406 rows and 37 columns.
 5. **Streamlit + Folium** — results render as a table, and if the result includes `lat`/`long` columns, a Folium map of the collision locations is drawn.
 
-See [docs/architecture_notes.md](docs/architecture_notes.md) for the full diagram, design decisions, and known retrieval gaps.
+See [docs/architecture.md](docs/architecture.md) for the Mermaid architecture diagram and [docs/architecture_notes.md](docs/architecture_notes.md) for design decisions and known limitations.
 
 ---
 
@@ -113,8 +113,8 @@ Full per-question scores, the v1 vs v2 delta analysis, and the Q13 judge false-n
 ## Future Work
 
 - **Result-level validation** to catch silent semantic failures (e.g. row counts outside plausible bounds, NULL-dominated GROUP BY results).
-- **Map tooltips** that surface collision metadata (date, severity, intersection) when a marker is clicked.
-- **UI improvements** — query history, example questions, downloadable result CSV.
+- **Map tooltips** are implemented — hover over a marker to see location, severity, date, impact type, and lighting condition.
+- **UI improvements** — query history and keyboard shortcuts for example questions.
 - **RAG retrieval quality** — fine-tune or replace `all-MiniLM-L6-v2` to close the semantic gap between natural-language time references ("night") and schema vocabulary ("Dark").
 - **Multi-table support** — generalise the prompt and validator to join the collision table with future tables (e.g. road segments, traffic counts, weather).
 

@@ -37,3 +37,7 @@ Thumbs.db
 # IDEs
 .vscode/settings.json
 .idea/
+
+# Large media — host on GitHub Releases instead
+docs/demo.gif
+
