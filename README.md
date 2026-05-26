@@ -12,7 +12,7 @@ Early in my data science career I worked alongside finance and marketing colleag
 
 ## Demo
 
-![App Demo](docs/demo.gif)
+![App Demo](https://github.com/jzzjyodj/ottawa-road-safety-analytics/releases/download/v1.0/demo.gif)
 
 *Type a plain English question → see the generated SQL → get results with an optional map*
 
