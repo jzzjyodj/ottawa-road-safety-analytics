@@ -16,13 +16,15 @@ The project will eventually include:
 
 ## Current Sprint Phase
 
-Current phase: CIMS Sprint, Days 9–10.
+Current phase: CIMS Sprint, Days 13–14.
 
 Immediate goal:
-- Run eval/run_deepeval.py against all 15 test questions
-- Score answer relevancy and faithfulness using deepeval GEval with Groq judge
-- Record scores in eval/eval_results.md
-- Document delta between prompt v1 and prompt v2
+- Write README.md explaining CIMS alignment, LangGraph node, RAG layer, eval results, and limitations
+- Create architecture diagram showing all layers: input → LangGraph → RAG retrieval → LLM API → validator → UI
+- Commit both before moving to cover letter
+
+Do not build the ML pipeline, FastAPI backend, or Docker setup yet unless explicitly requested.
+
 ## Repository Structure
 
 Expected structure:
